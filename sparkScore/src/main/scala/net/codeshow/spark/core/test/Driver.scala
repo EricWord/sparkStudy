@@ -7,17 +7,36 @@ object Driver {
   def main(args: Array[String]): Unit = {
 
     //连接服务器
-    val client = new Socket("localhost", 9999)
-    val out = client.getOutputStream
-    val objOut = new ObjectOutputStream(out)
-
+    val client1 = new Socket("localhost", 9999)
+    val client2 = new Socket("localhost", 8888)
     val task = new Task()
+    val out1 = client1.getOutputStream
+    val objOut1 = new ObjectOutputStream(out1)
 
-    objOut.writeObject(task)
+    val subTask = new SubTask()
+    subTask.logic=task.logic
+    subTask.datas=task.datas.take(2)
 
-    objOut.flush()
-    objOut.close()
-    client.close()
+
+    objOut1.writeObject(subTask)
+
+    objOut1.flush()
+    objOut1.close()
+    client1.close()
+
+    val out2 = client2.getOutputStream
+    val objOut2 = new ObjectOutputStream(out2)
+
+    val subTask1 = new SubTask()
+    subTask1.logic=task.logic
+    subTask1.datas=task.datas.takeRight(2)
+
+
+    objOut2.writeObject(subTask1)
+
+    objOut2.flush()
+    objOut2.close()
+    client2.close()
     println("客户端数据发送完毕")
 
   }
