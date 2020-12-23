@@ -9,7 +9,15 @@ object Spark02_RDD_Operator_Transform {
     val sc = new SparkContext(sparkConf)
 
     //@todo 算子-map
+    val rdd = sc.makeRDD(List(1, 2, 3, 4), 2)
 
+    val mpRDD = rdd.mapPartitions(
+      iter => {
+        List(iter.max).iterator
+      }
+    )
+
+    mpRDD.collect().foreach(println)
 
     sc.stop()
   }
