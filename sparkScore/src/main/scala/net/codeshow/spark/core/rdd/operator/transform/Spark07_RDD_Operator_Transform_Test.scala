@@ -9,7 +9,6 @@ object Spark07_RDD_Operator_Transform_Test {
     val sc = new SparkContext(sparkConf)
 
     //@todo 算子
-
     val rdd = sc.textFile("datas/apache.log")
     rdd.filter(
       line => {
@@ -18,8 +17,6 @@ object Spark07_RDD_Operator_Transform_Test {
         time.startsWith("17/05/2015")
       }
     ).collect().foreach(println)
-
-
     sc.stop()
   }
 }
