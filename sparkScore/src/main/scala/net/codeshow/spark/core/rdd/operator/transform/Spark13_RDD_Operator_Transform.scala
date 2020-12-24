@@ -29,8 +29,6 @@ object Spark13_RDD_Operator_Transform {
     //两个数据源的每个分区中的数据数量要保持一致，否则报 Can only zip RDDs with same number of elements in each partition
     val rdd6 = rdd1.zip(rdd2)
     println(rdd6.collect().mkString(","))
-
-
     sc.stop()
   }
 }
