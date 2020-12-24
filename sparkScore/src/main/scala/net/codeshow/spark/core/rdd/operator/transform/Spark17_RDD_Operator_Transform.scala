@@ -2,7 +2,7 @@ package net.codeshow.spark.core.rdd.operator.transform
 
 import org.apache.spark.{SparkConf, SparkContext}
 
-object Spark16_RDD_Operator_Transform {
+object Spark17_RDD_Operator_Transform {
   def main(args: Array[String]): Unit = {
     //@todo 准备环境
     val sparkConf = new SparkConf().setMaster("local[*]").setAppName("Operator")
@@ -13,13 +13,7 @@ object Spark16_RDD_Operator_Transform {
     ))
 
 
-    //groupByKey:将数据源中的数据，相同key的数据分在一组，形成一个对偶元组
-    //元组中的第一个元素就是key
-    //元组中的第二个元素就是相同key的value的集合
-    val groupRDD = rdd.groupByKey()
-    groupRDD.collect().foreach(println)
-    val groupRDD1 = rdd.groupBy(_._1)
-    groupRDD1.collect().foreach(println)
+    rdd.aggregateByKey()
     sc.stop()
   }
 }

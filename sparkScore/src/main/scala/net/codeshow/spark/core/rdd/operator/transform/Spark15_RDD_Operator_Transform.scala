@@ -17,8 +17,6 @@ object Spark15_RDD_Operator_Transform {
     //如果key的数据只有1个，是不会参与运算的
     val reduceRDD = rdd.reduceByKey(_ + _)
     reduceRDD.collect().foreach(println)
-
-
     sc.stop()
   }
 }
