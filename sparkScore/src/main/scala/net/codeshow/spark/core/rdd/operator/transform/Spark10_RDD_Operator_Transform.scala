@@ -15,8 +15,6 @@ object Spark10_RDD_Operator_Transform {
     //    val newRDD = rdd.coalesce(2)
     val newRDD = rdd.coalesce(2, shuffle = true)
     newRDD.saveAsTextFile("output")
-
-
     sc.stop()
   }
 }
