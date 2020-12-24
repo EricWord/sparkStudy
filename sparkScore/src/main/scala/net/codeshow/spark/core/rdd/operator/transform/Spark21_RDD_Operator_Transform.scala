@@ -8,53 +8,22 @@ object Spark21_RDD_Operator_Transform {
     val sparkConf = new SparkConf().setMaster("local[*]").setAppName("Operator")
     val sc = new SparkContext(sparkConf)
     //@todo 算子
-    val rdd = sc.makeRDD(List(
-      ("a", 1), ("a", 2), ("b", 3),
-      ("b", 4), ("b", 5), ("a", 6)
+    val rdd1 = sc.makeRDD(List(
+      ("a", 1), ("b", 2), ("c", 3),
     ))
 
-    /*
 
-    reduceByKey:
+    val rdd2 = sc.makeRDD(List(
+      ("a", 4), ("b", 5), ("c", 6),
+    ))
 
-      combineByKeyWithClassTag[V](
-        (v: V) => v,//第一个值不会参与计算
-        func,//分区内计算规则
-        func,//分区间计算规则
-        )
+    //join:两个不同数据源的数据，相同key的value会连接在一起，形成元组
+    //如果两个数据源中key没有匹配上，那么数据不会出现在结果中
+    //如果两个数据源中key有多个相同的，会依次匹配，可能会出现笛卡尔乘积，数据量会呈现几何性增长
+    //会导致性能降低
+    val joinRDD = rdd1.join(rdd2)
+    joinRDD.collect().foreach(println)
 
-
-    aggregateByKey:
-
-      combineByKeyWithClassTag[U](
-        (v: V) => cleanedSeqOp(createZero(), v),//初始值和第一个key的value值进行的分区内数据操作
-        cleanedSeqOp,//分区内计算规则
-        combOp,//分区间计算规则
-        )
-
-
-    foldByKey:
-
-      combineByKeyWithClassTag[V](
-        (v: V) => cleanedFunc(createZero(), v),//初始值和第一个key的value值进行的分区内数据操作
-        cleanedFunc,//分区内计算规则
-        cleanedFunc,//分区间计算规则
-        )
-
-    combineByKey:
-       combineByKeyWithClassTag(
-        createCombiner,//相同key的第一条数据进行的处理
-        mergeValue,    //表示分区内数据的处理函数
-        mergeCombiners,//表示分区间数据的处理函数
-        )
-
-    */
-
-
-    rdd.reduceByKey(_ + _) //wordCount
-    rdd.aggregateByKey(0)(_ + _, _ + _) //wordCount
-    rdd.foldByKey(0)(_ + _) //wordCount
-    rdd.combineByKey(v => v, (x: Int, y) => x + y, (x: Int, y: Int) => x + y) //wordCount
 
     sc.stop()
   }

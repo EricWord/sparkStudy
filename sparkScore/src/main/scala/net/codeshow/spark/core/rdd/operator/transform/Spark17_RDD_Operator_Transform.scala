@@ -13,7 +13,6 @@ object Spark17_RDD_Operator_Transform {
     ))
 
 
-    rdd.aggregateByKey()
     sc.stop()
   }
 }
