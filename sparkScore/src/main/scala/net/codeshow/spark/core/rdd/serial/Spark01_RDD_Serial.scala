@@ -31,8 +31,6 @@ object Spark01_RDD_Serial {
       val s = query
       rdd.filter(x => x.contains(s))
     }
-
-
   }
 
 }
