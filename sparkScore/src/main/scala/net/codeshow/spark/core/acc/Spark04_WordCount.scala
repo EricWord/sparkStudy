@@ -16,7 +16,7 @@ object Spark04_WordCount {
     //    1.创建累加器对象
     //    2.向Spark进行注册
     val wcAcc = new MyAccmulator()
-    sc.register(wcAcc)
+    sc.register(wcAcc, "wordCountAcc")
 
 
     rdd.map((_, 1)).reduceByKey(_ + _)
@@ -27,7 +27,7 @@ object Spark04_WordCount {
       }
     )
 
-
+    println(wcAcc.value)
     sc.stop()
   }
 
@@ -36,17 +36,47 @@ object Spark04_WordCount {
 
    */
   class MyAccmulator extends AccumulatorV2[String, mutable.Map[String, Long]] {
-    override def isZero: Boolean = ???
+    private var wcMap = mutable.Map[String, Long]()
 
-    override def copy(): AccumulatorV2[Nothing, Nothing] = ???
+    //判断是否为初始状态
+    override def isZero: Boolean = {
+      wcMap.isEmpty
 
-    override def reset(): Unit = ???
+    }
 
-    override def add(v: Nothing): Unit = ???
+    override def copy(): AccumulatorV2[String, mutable.Map[String, Long]] = {
+      new MyAccmulator()
+    }
 
-    override def merge(other: AccumulatorV2[Nothing, Nothing]): Unit = ???
+    override def reset(): Unit = {
+      wcMap.clear()
+    }
 
-    override def value: Nothing = ???
+    //获取累加器需要计算的值
+    override def add(word: String): Unit = {
+      val newCnt = wcMap.getOrElse(word, 0L) + 1
+      wcMap.update(word, newCnt)
+
+    }
+
+    //Driver合并多个累加器
+    override def merge(other: AccumulatorV2[String, mutable.Map[String, Long]]): Unit = {
+      val map1 = this.wcMap
+      val map2 = other.value
+      map2.foreach {
+        case (word, count) => {
+          val newCount = map1.getOrElse(word, 0L) + count
+          map1.update(word, newCount)
+        }
+      }
+
+    }
+
+    //累加器结果
+    override def value: mutable.Map[String, Long] = {
+      wcMap
+
+    }
   }
 
 }
