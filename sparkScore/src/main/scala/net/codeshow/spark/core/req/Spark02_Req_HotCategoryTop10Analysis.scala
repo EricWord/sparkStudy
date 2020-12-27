@@ -7,13 +7,10 @@ object Spark02_Req_HotCategoryTop10Analysis {
     //    todo top10热门品类
     val sparkConf = new SparkConf().setMaster("local[*]").setAppName("HotCategoryTop10Analysis")
     val sc = new SparkContext(sparkConf)
-
-
     //    1.读取原始日志数据
     val actionRDD = sc.textFile("datas/user_visit_action.txt")
     //    actionRDD重复使用
     actionRDD.cache()
-
     //    2.统计品类的点击数量:(品类ID,点击数量)
     val clickActionRDD = actionRDD.filter(
       action => {
@@ -62,25 +59,20 @@ object Spark02_Req_HotCategoryTop10Analysis {
         cids.map(id => (id, 1))
       }
     ).reduceByKey(_ + _)
-
-
     //    5.将品类进行排序，并且取前10名
     //点击数量排序，下单数量排序，支付数量排序
     //    元组排序:先比较第一个，如果第一个相同，再比较第二个，如果第二个相同，再比较第三个，以此类推
     //    (品类ID,(点击数量,下单数量,支付数量))
-
     var rdd1 = clickCountRDD.map {
       case (cid, cnt) => {
         (cid, (cnt, 0, 0))
       }
     }
-
     var rdd2 = orderCountRDD.map {
       case (cid, cnt) => {
         (cid, (0, cnt, 0))
       }
     }
-
     var rdd3 = payCountRDD.map {
       case (cid, cnt) => {
         (cid, (0, 0, cnt))
@@ -92,18 +84,11 @@ object Spark02_Req_HotCategoryTop10Analysis {
     val analysisRDD = sourceRDD.reduceByKey(
       (t1, t2) => {
         (t1._1 + t2._1, t1._2 + t2._2, t1._3 + t2._3)
-
       }
     )
-
     val resultRDD = analysisRDD.sortBy(_._2, ascending = false).take(10)
-
-
     //    6.将结果采集到控制台打印出来
     resultRDD.foreach(println)
-
-
     sc.stop()
   }
-
 }
