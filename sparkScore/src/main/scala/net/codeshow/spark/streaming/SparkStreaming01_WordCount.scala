@@ -19,7 +19,6 @@ object SparkStreaming01_WordCount {
     val wordToCount = wordToOne.reduceByKey(_ + _)
     wordToCount.print()
 
-
     //由于SparkStreaming是一个长期执行的任务，所以不能关闭
     //    如果main方法执行完毕，应用程序也会自动结束，所以不能让main方法执行完毕
     //    ssc.stop()
@@ -28,5 +27,4 @@ object SparkStreaming01_WordCount {
     //    2.等待采集器关闭
     ssc.awaitTermination()
   }
-
 }
